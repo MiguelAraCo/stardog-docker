@@ -35,7 +35,7 @@ The image is designed to be very flexible. Any command you can normally execute 
     stardog-admin server start --foreground
   ```
 
-  **Note:** The parameters provided to the container is the actual command used to run a Stardog server `stardog-admin server start --foreground`
+  **Note:** The parameters provided to the container are the actual command used to run a Stardog server `stardog-admin server start --foreground`
 
 ### Running other commands
 

@@ -1,31 +1,44 @@
+# === START: INTERMEDIATE BUILD IMAGE ===
+# Since Stardog only offers rpm/deb repositories
+# we need an intermediate image to pull the latest
+# release and later on copy it to the alpine image
+FROM centos:7 AS INSTALL_IMAGE
+
+# VERSION can be specified to download a specific
+# version of Stardog
+ARG VERSION=0
+
+# Install stardog from its repo
+RUN curl http://packages.stardog.com/rpms/stardog.repo > /etc/yum.repos.d/stardog.repo && \
+	if [ $VERSION -eq 0 ]; then yum install -y stardog; else yum install -y stardog-$VERSION-1; fi
+
+# === END: INTERMEDIATE BUILD IMAGE ===
+
 FROM openjdk:8-alpine
 
+# Install bash since Stardog init scripts need it
 RUN apk add --update \
 	bash \
 	&& rm -rf /var/cache/apk/*
 
-# Argument to provide stardog zip file to the build process
-ARG file
+# Stardog needs this environment variable to
+# locate its data
+ENV STARDOG_HOME /stardog
 
-ENV STARDOG_HOME /data
-ENV STARDOG_INSTALL_DIR /opt/stardog
-ENV PATH ${STARDOG_INSTALL_DIR}/bin:${PATH}
+# Add Stardog bin directory to the PATH env so
+# Stardog binaries can be executed directly
+ENV PATH /opt/stardog/bin:${PATH}
 
 RUN mkdir -p ${STARDOG_HOME}
-RUN mkdir -p ${STARDOG_INSTALL_DIR}/bin
+RUN mkdir -p /opt/stardog/bin
 
-# Unzip and install stardog from provided zip file
-ADD $file /tmp
-RUN apk add --update unzip && \
-	rm -rf /var/cache/apk/* && \
-	mkdir /tmp/stardog && \
-	unzip -qq -d /tmp/stardog /tmp/$file && \
-	rm -f /tmp/$file && \
-	cp -r /tmp/stardog/$(ls /tmp/stardog)/* ${STARDOG_INSTALL_DIR}/ && \
-	rm -rf /tmp/stardog && \
-	apk del unzip
+# Copy the previously installed binaries (from the
+# intermediate image)
+COPY --from=INSTALL_IMAGE /opt/stardog /opt/stardog
 
-WORKDIR ${STARDOG_INSTALL_DIR}/bin
+WORKDIR /opt/stardog/bin
+
+VOLUME [ "/stardog" ]
 
 EXPOSE 5820
 

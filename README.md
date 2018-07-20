@@ -6,14 +6,22 @@ Due to Stardog licensing scheme the image can't be published publicly.
 
 ## Build
 
-- Download Stardog: [http://stardog.com/#download](http://stardog.com/#download )
-- Run:
+```bash
+docker build --tag stardog .
+```
 
-  ```bash
-  docker build --tag stardog --build-arg file=/directory/to/stardog/zip/file.zip .
-  ```
+### Build with a specific Stardog version
 
-  **Note:** Replace `/directory/to/stardog/zip/file.zip` with the path to the zip you downloaded in the previous step
+Optionally, the build argument `VERSION` can be specified in the build command to declare the desired version.
+
+**Example:**
+
+```
+docker build --tag stardog --build-arg VERSION=5.2.2 .
+```
+
+**Note:** Stardog started publishing their binaries on their repositories since version `5.0.3` so this is the oldest
+version that can be requested.
 
 ## Usage
 

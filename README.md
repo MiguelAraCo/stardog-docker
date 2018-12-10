@@ -37,7 +37,7 @@ The image is designed to be very flexible. Any command you can normally execute 
   docker run -dit \
     --name stardog \
     -p 5820:5820 \
-    -v /path/to/directory/created/or/docker/volume:/opt/stardog \
+    -v /path/to/directory/created/or/docker/volume:/stardog \
     -v /path/to/stardog-license-key.bin:/opt/stardog/stardog-license-key.bin \
     stardog \
     stardog-admin server start --foreground
